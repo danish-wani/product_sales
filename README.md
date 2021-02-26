@@ -1,6 +1,6 @@
 # Product Sales
 
-**Heroku URL**:   https://
+**Heroku URL**:   https://product-sales-demo.herokuapp.com/
 
 
 **Login Page** (Email/Username based authentication)

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+	<style>
+	.active{
+		background-color: #1266f1 !important;
+	}
+
+	.active > span{
+		color: white !important;
+	}
+
+	</style>
+	<div class="container" style="padding-top:20px">
+		<div class="row">
+			<div class="col-7" style="margin-top: -50px; text-align: right;">
+				<img src="{% static 'logos/product_sales.png'%}" height="auto">
+			</div>
+			<div class="col-5" style="text-align: right;">
+			  <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-6">
+				<form method="GET" id="month-form">
+					  <select name="month" class="form-control form-select" style="width: 50%;">
+						  <option value=""> Select Month</option>
+						  {% for number, month_name in months_dictionary.items %}
+						  <option value="{{number}}" {% if number == selected_month %} selected {% endif %}> {{ month_name }}</option>
+						  {% endfor %}
+					  </select>
+				  </form>
+				{% if sales_product_line_graph_data %}
+				<div style="margin-top:20px;">
+					<canvas id="sales-product-line-data" style="display: block; width: 1000px; height: 500px;" width="1134" height="567" class="chartjs-render-monitor"></canvas>
+				</div>
+				{% endif %}
+				<div>
+					<canvas id="sales-monthly-data" style="display: block; width: 1000px; height: 500px;" width="1134" height="567" class="chartjs-render-monitor"></canvas>
+				</div>
+
+			</div>
+			<div class="col-sm-6">
+				<table class="table">
+					<thead>
+							<tr>
+								<th>
+									Product Line
+								</th>
+								<th>
+									Quantity
+								</th>
+								<th>
+									Order Date
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for product_data in object_list %}
+							<tr>
+								<td>
+									{{ product_data.product_line }}
+								</td>
+								<td>
+									{{ product_data.quantity }}
+								</td>
+								<td>
+									{{ product_data.order_date|date:"F Y" }}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+
+				</table>
+				<div style="display: flex; justify-content: space-around;">
+					{% if is_paginated %}
+					  <ul class="pagination">
+						{% if page_obj.has_previous %}
+						  <li><a href="?page={{ page_obj.previous_page_number }}" class="btn">&laquo;</a></li>
+						{% else %}
+						  <li class="disabled"><span class="btn">&laquo;</span></li>
+						{% endif %}
+						{% for i in paginator.page_range %}
+						  {% if page_obj.number == i %}
+							<li class="active"><span class="btn">{{ i }} <span class="sr-only btn">(current)</span></span></li>
+						  {% else %}
+							<li><a href="?page={{ i }}" class="btn">{{ i }}</a></li>
+						  {% endif %}
+						{% endfor %}
+						{% if page_obj.has_next %}
+						  <li><a href="?page={{ page_obj.next_page_number }}" class="btn">&raquo;</a></li>
+						{% else %}
+						  <li class="disabled"><span class="btn">&raquo;</span></li>
+						{% endif %}
+					  </ul>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-bottom: 40px;">
+			<div class="col-6">
+
+			</div>
+			<div class="col-6">
+
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+		new Chart(
+			document.getElementById("sales-monthly-data"), {
+				"type":"line",
+				"data":{
+					"labels":[{% for month in sales_graph_data.keys %} "{{ month }}", {% endfor %}],
+					"datasets":[{"label":"Monthly Sales Data {{ selected_year}}",
+					"data":[{% for value in sales_graph_data.values %} "{{ value }}", {% endfor %}],
+					"fill":false,
+					"borderColor":"#585556",
+					"lineTension":0.1}]},
+					"options":{}
+			}
+		);
+
+		{% if sales_product_line_graph_data %}
+		new Chart(
+			document.getElementById("sales-product-line-data"), {
+				"type":"bar",
+				"data":{
+					"labels":[{% for record in sales_product_line_graph_data %} "{{ record.product_line }}", {% endfor %}],
+					"datasets":[{"label":"Product-Line Sales Data for {{ month_name }}",
+					"data":[{% for record in sales_product_line_graph_data %} "{{ record.sales }}", {% endfor %}],
+					"fill":true,
+					"backgroundColor": "#585556",
+					"borderColor":"rgb(75, 192, 192)",
+					"lineTension":0.1}]},
+					"options":{}
+			}
+		);
+		{% endif %}
+
+
+		$('body').on('change', "select[name='month']", function(){
+			if ($(this).val() != ''){
+				$('#month-form').submit();
+			}
+		})
+
+	</script>
+
+{% endblock %}
+

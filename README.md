@@ -1,6 +1,7 @@
 # Product Sales
 
-**Heroku URL**:   https://product-sales-demo.herokuapp.com/
+**Heroku URL**:   https://product-sales-demo.herokuapp.com/    (email: admin@admin.com password: aDmin123)
+
 
 
 **Login Page** (Email/Username based authentication)
@@ -11,15 +12,12 @@ How to run:
 
 `pip install pipenv`
 
-`cd mercados_em`
-
 `pipenv shell`
 
 `pipenv install`
 
 `python manage.py runserver`
 
-(set DEBUG=False and ALLOWED_HOSTS = [] in product_sales/settings.py  if you are running on local machine)
 
 To load a CSV sales data in future with predefined column headers you can run
 
